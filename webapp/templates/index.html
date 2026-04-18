@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,8 +8,11 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap"
+    rel="stylesheet" />
 </head>
+
 <body>
 
   <header class="site-header">
@@ -17,7 +21,7 @@
         <span class="logo-icon">⚡</span>
         <span class="logo-text">PhishGuard <em>AI</em></span>
       </div>
-      <p class="tagline">AI-Driven Phishing Email Detection &mdash; SGP Project</p>
+      <p class="tagline">AI-Driven Phishing Email Detection &mdash;</p>
     </div>
     <div class="header-glow"></div>
   </header>
@@ -61,7 +65,8 @@
           <span>Email Content</span>
           <span class="section-badge required">Required</span>
         </div>
-        <textarea id="emailInput" placeholder="Paste the full email content here (subject + body)..." rows="8"></textarea>
+        <textarea id="emailInput" placeholder="Paste the full email content here (subject + body)..."
+          rows="8"></textarea>
         <div class="char-count"><span id="charCount">0</span> characters</div>
       </div>
 
@@ -124,7 +129,9 @@
         <p class="result-sub" id="resultSub"></p>
         <div class="confidence-wrap" id="confidenceWrap">
           <span class="conf-label">Confidence</span>
-          <div class="conf-bar-bg"><div class="conf-bar" id="confBar"></div></div>
+          <div class="conf-bar-bg">
+            <div class="conf-bar" id="confBar"></div>
+          </div>
           <span class="conf-value" id="confValue"></span>
         </div>
       </div>
@@ -179,19 +186,19 @@
   </main>
 
   <footer class="site-footer">
-    <p>B.Tech Computer Science &mdash; Semester Group Project &mdash; AI Phishing Email Detection System</p>
+    <p>B.Tech Computer Science &mdash; AI Phishing Email Detection System</p>
   </footer>
 
   <script>
     /* ── Char counter ── */
-    const textarea  = document.getElementById('emailInput');
+    const textarea = document.getElementById('emailInput');
     const charCount = document.getElementById('charCount');
     textarea.addEventListener('input', () => { charCount.textContent = textarea.value.length; });
 
     /* ── Sample buttons ── */
     document.querySelectorAll('.btn-sample').forEach(btn => {
       btn.addEventListener('click', async () => {
-        const res  = await fetch('/sample/' + btn.dataset.type);
+        const res = await fetch('/sample/' + btn.dataset.type);
         const data = await res.json();
         if (data.email) { textarea.value = data.email; charCount.textContent = data.email.length; }
       });
@@ -205,7 +212,7 @@
       const row = document.createElement('div');
       row.className = 'link-input-row';
       row.innerHTML = '<input type="url" class="link-input" placeholder="https://example.com/suspicious-link" value="' + escHtml(val) + '" />'
-                    + '<button class="btn-remove-link" title="Remove">&#10005;</button>';
+        + '<button class="btn-remove-link" title="Remove">&#10005;</button>';
       row.querySelector('.btn-remove-link').addEventListener('click', () => row.remove());
       linksArea.appendChild(row);
     }
@@ -220,16 +227,16 @@
     }
 
     /* ── File / drop-zone management ── */
-    const dropZone  = document.getElementById('dropZone');
+    const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const filesList = document.getElementById('filesList');
     let attachedFiles = [];
 
-    dropZone.addEventListener('click',     () => fileInput.click());
-    dropZone.addEventListener('dragover',  e  => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-    dropZone.addEventListener('dragleave', ()  => dropZone.classList.remove('drag-over'));
-    dropZone.addEventListener('drop',      e  => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
-    fileInput.addEventListener('change',   ()  => { handleFiles(fileInput.files); fileInput.value = ''; });
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
+    fileInput.addEventListener('change', () => { handleFiles(fileInput.files); fileInput.value = ''; });
 
     function handleFiles(list) {
       const MAX = 10 * 1024 * 1024;
@@ -245,9 +252,9 @@
       const li = document.createElement('li');
       li.className = 'file-item';
       li.innerHTML = '<span class="file-icon">' + getFileIcon(file.name) + '</span>'
-                   + '<span class="file-name">' + escHtml(file.name) + '</span>'
-                   + '<span class="file-size">' + fmtSize(file.size) + '</span>'
-                   + '<button class="file-remove" title="Remove">&#10005;</button>';
+        + '<span class="file-name">' + escHtml(file.name) + '</span>'
+        + '<span class="file-size">' + fmtSize(file.size) + '</span>'
+        + '<button class="file-remove" title="Remove">&#10005;</button>';
       li.querySelector('.file-remove').addEventListener('click', () => {
         attachedFiles = attachedFiles.filter(f => !(f.name === file.name && f.size === file.size));
         li.remove();
@@ -255,22 +262,24 @@
       filesList.appendChild(li);
     }
 
-    const FILE_ICONS = { pdf:'📄', doc:'📝', docx:'📝', xls:'📊', xlsx:'📊',
-                         zip:'🗜️', exe:'⚙️', js:'📜', html:'🌐', txt:'📃',
-                         csv:'📊', ppt:'📋', pptx:'📋' };
+    const FILE_ICONS = {
+      pdf: '📄', doc: '📝', docx: '📝', xls: '📊', xlsx: '📊',
+      zip: '🗜️', exe: '⚙️', js: '📜', html: '🌐', txt: '📃',
+      csv: '📊', ppt: '📋', pptx: '📋'
+    };
     function getFileIcon(name) { return FILE_ICONS[name.split('.').pop().toLowerCase()] || '📁'; }
     function fmtSize(b) {
       if (b < 1024) return b + ' B';
-      if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
-      return (b/1048576).toFixed(1) + ' MB';
+      if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+      return (b / 1048576).toFixed(1) + ' MB';
     }
 
     /* ── Analyse ── */
-    const analyseBtn  = document.getElementById('analyseBtn');
-    const btnText     = analyseBtn.querySelector('.btn-text');
-    const btnSpinner  = analyseBtn.querySelector('.btn-spinner');
+    const analyseBtn = document.getElementById('analyseBtn');
+    const btnText = analyseBtn.querySelector('.btn-text');
+    const btnSpinner = analyseBtn.querySelector('.btn-spinner');
     const resultPanel = document.getElementById('resultPanel');
-    const errorPanel  = document.getElementById('errorPanel');
+    const errorPanel = document.getElementById('errorPanel');
 
     analyseBtn.addEventListener('click', async () => {
       const email = textarea.value.trim();
@@ -282,7 +291,7 @@
 
       try {
         /* 1. Email text */
-        const eRes  = await fetch('/predict', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email}) });
+        const eRes = await fetch('/predict', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
         const eData = await eRes.json();
         if (eData.error) throw new Error(eData.error);
 
@@ -290,7 +299,7 @@
         const links = getLinks();
         let linkResults = [];
         if (links.length) {
-          const lRes  = await fetch('/predict_links', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({links}) });
+          const lRes = await fetch('/predict_links', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ links }) });
           const lData = await lRes.json();
           linkResults = lData.results || [];
         }
@@ -300,14 +309,14 @@
         if (attachedFiles.length) {
           const fd = new FormData();
           attachedFiles.forEach(f => fd.append('files', f));
-          const fRes  = await fetch('/predict_files', { method:'POST', body: fd });
+          const fRes = await fetch('/predict_files', { method: 'POST', body: fd });
           const fData = await fRes.json();
           fileResults = fData.results || [];
         }
 
         showResult(eData, linkResults, fileResults);
 
-      } catch(err) {
+      } catch (err) {
         document.getElementById('errorMsg').textContent = 'Error: ' + err.message;
         errorPanel.hidden = false;
       } finally {
@@ -320,17 +329,17 @@
       const isPhish = emailData.label_code === 1;
 
       /* Email block */
-      document.getElementById('resultIcon').textContent  = isPhish ? '🚨' : '✅';
+      document.getElementById('resultIcon').textContent = isPhish ? '🚨' : '✅';
       document.getElementById('resultLabel').textContent = emailData.label;
-      document.getElementById('resultLabel').className   = 'result-label ' + (isPhish ? 'phishing' : 'legitimate');
-      document.getElementById('resultSub').textContent   = isPhish
+      document.getElementById('resultLabel').className = 'result-label ' + (isPhish ? 'phishing' : 'legitimate');
+      document.getElementById('resultSub').textContent = isPhish
         ? 'This email shows characteristics commonly associated with phishing. Do NOT click links or share personal info.'
         : 'This email appears legitimate. Stay cautious with unexpected requests.';
 
       const cw = document.getElementById('confidenceWrap');
       if (emailData.confidence !== null) {
         document.getElementById('confBar').style.cssText = 'width:' + emailData.confidence + '%;background:' + (isPhish ? '#ef4444' : '#22c55e');
-        document.getElementById('confValue').textContent  = emailData.confidence + '%';
+        document.getElementById('confValue').textContent = emailData.confidence + '%';
         cw.hidden = false;
       } else { cw.hidden = true; }
 
@@ -343,9 +352,9 @@
           const d = document.createElement('div');
           d.className = 'result-row ' + (r.suspicious ? 'row-danger' : 'row-safe');
           d.innerHTML = '<span class="rr-icon">' + (r.suspicious ? '🚩' : '✅') + '</span>'
-                      + '<div class="rr-details"><span class="rr-title">' + escHtml(r.url) + '</span>'
-                      + '<span class="rr-reason">' + escHtml(r.reason) + '</span></div>'
-                      + '<span class="rr-badge ' + (r.suspicious ? 'badge-danger' : 'badge-safe') + '">' + (r.suspicious ? 'Suspicious' : 'Clean') + '</span>';
+            + '<div class="rr-details"><span class="rr-title">' + escHtml(r.url) + '</span>'
+            + '<span class="rr-reason">' + escHtml(r.reason) + '</span></div>'
+            + '<span class="rr-badge ' + (r.suspicious ? 'badge-danger' : 'badge-safe') + '">' + (r.suspicious ? 'Suspicious' : 'Clean') + '</span>';
           ll.appendChild(d);
         });
         linkBlock.hidden = false;
@@ -360,23 +369,23 @@
           const d = document.createElement('div');
           d.className = 'result-row ' + (r.suspicious ? 'row-danger' : 'row-safe');
           d.innerHTML = '<span class="rr-icon">' + (r.suspicious ? '⚠️' : '✅') + '</span>'
-                      + '<div class="rr-details"><span class="rr-title">' + escHtml(r.filename) + '</span>'
-                      + '<span class="rr-reason">' + escHtml(r.reason) + '</span></div>'
-                      + '<span class="rr-badge ' + (r.suspicious ? 'badge-danger' : 'badge-safe') + '">' + (r.suspicious ? 'Suspicious' : 'Clean') + '</span>';
+            + '<div class="rr-details"><span class="rr-title">' + escHtml(r.filename) + '</span>'
+            + '<span class="rr-reason">' + escHtml(r.reason) + '</span></div>'
+            + '<span class="rr-badge ' + (r.suspicious ? 'badge-danger' : 'badge-safe') + '">' + (r.suspicious ? 'Suspicious' : 'Clean') + '</span>';
           fl.appendChild(d);
         });
         fileBlock.hidden = false;
       } else { fileBlock.hidden = true; }
 
       /* Overall verdict */
-      const anyBad   = isPhish || linkResults.some(r => r.suspicious) || fileResults.some(r => r.suspicious);
-      const verdict  = document.getElementById('overallVerdict');
+      const anyBad = isPhish || linkResults.some(r => r.suspicious) || fileResults.some(r => r.suspicious);
+      const verdict = document.getElementById('overallVerdict');
       verdict.className = 'overall-verdict ' + (anyBad ? 'verdict-phishing' : 'verdict-safe');
       verdict.innerHTML = anyBad
         ? '<span class="verdict-icon">🛑</span><div><strong>OVERALL: HIGH RISK</strong><p>One or more signals indicate a phishing attempt. Do not interact with this email.</p></div>'
         : '<span class="verdict-icon">🛡️</span><div><strong>OVERALL: LOW RISK</strong><p>No strong phishing signals detected. Always remain cautious.</p></div>';
 
-      resultPanel.hidden    = false;
+      resultPanel.hidden = false;
       resultPanel.className = 'panel result-panel ' + (anyBad ? 'phishing' : 'legitimate');
       resultPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -396,8 +405,9 @@
     });
 
     function escHtml(s) {
-      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
   </script>
 </body>
+
 </html>
