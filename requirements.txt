@@ -1,0 +1,22 @@
+# ============================================================
+# Requirements for AI Phishing Email Detection System
+# Install: pip install -r requirements.txt
+# ============================================================
+
+# Core data science
+pandas>=1.5.0
+numpy>=1.23.0
+scikit-learn>=1.2.0
+
+# Natural Language Processing
+nltk>=3.8.0
+
+# Web framework
+flask>=2.3.0
+
+# Visualisation (for training charts)
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Utilities
+pickle5; python_version < '3.8'   # backport – only needed on Python < 3.8

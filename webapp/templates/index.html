@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Phishing Email Detector</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">PhishGuard <em>AI</em></span>
+      </div>
+      <p class="tagline">AI-Driven Phishing Email Detection &mdash; SGP Project</p>
+    </div>
+    <div class="header-glow"></div>
+  </header>
+
+  <main class="container">
+
+    <!-- Stats bar -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-num">3</span>
+        <span class="stat-label">ML Models</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num">80K+</span>
+        <span class="stat-label">Training Emails</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num">98%+</span>
+        <span class="stat-label">Accuracy</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num">TF-IDF</span>
+        <span class="stat-label">Feature Method</span>
+      </div>
+    </div>
+
+    <!-- ── UNIFIED INPUT PANEL ── -->
+    <section class="panel input-panel">
+      <div class="panel-header">
+        <h2>Analyse Email</h2>
+        <div class="sample-btns">
+          <button class="btn-sample" data-type="phishing">Load Phishing Sample</button>
+          <button class="btn-sample" data-type="legitimate">Load Legit Sample</button>
+        </div>
+      </div>
+
+      <!-- SECTION 1: Email Body -->
+      <div class="input-section">
+        <div class="section-label">
+          <span class="section-icon">&#9993;</span>
+          <span>Email Content</span>
+          <span class="section-badge required">Required</span>
+        </div>
+        <textarea id="emailInput" placeholder="Paste the full email content here (subject + body)..." rows="8"></textarea>
+        <div class="char-count"><span id="charCount">0</span> characters</div>
+      </div>
+
+      <div class="section-divider"><span>+ Links Found in Email</span></div>
+
+      <!-- SECTION 2: Links -->
+      <div class="input-section">
+        <div class="section-label">
+          <span class="section-icon">&#128279;</span>
+          <span>URLs / Links in Email</span>
+          <span class="section-badge optional">Optional</span>
+        </div>
+        <div class="links-area" id="linksArea">
+          <div class="link-input-row">
+            <input type="url" class="link-input" placeholder="https://example.com/suspicious-link" />
+            <button class="btn-remove-link" title="Remove">&#10005;</button>
+          </div>
+        </div>
+        <button class="btn-add-link" id="addLinkBtn">+ Add another link</button>
+        <p class="field-hint">Copy-paste any URLs from the email body for phishing link analysis.</p>
+      </div>
+
+      <div class="section-divider"><span>+ Email Attachments</span></div>
+
+      <!-- SECTION 3: File Attachments -->
+      <div class="input-section">
+        <div class="section-label">
+          <span class="section-icon">&#128206;</span>
+          <span>Attached Files</span>
+          <span class="section-badge optional">Optional</span>
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-zone-inner">
+            <div class="drop-icon">&#128193;</div>
+            <p class="drop-title">Drag &amp; drop files here</p>
+            <p class="drop-sub">or <span class="drop-link">click to browse</span></p>
+            <p class="drop-types">PDF, DOC, DOCX, XLS, XLSX, ZIP, EXE, JS, HTML, TXT &mdash; max 10 MB each</p>
+          </div>
+          <input type="file" id="fileInput" multiple
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.zip,.exe,.js,.html,.txt,.csv,.ppt,.pptx" hidden />
+        </div>
+
+        <ul class="files-list" id="filesList"></ul>
+      </div>
+
+      <button id="analyseBtn" class="btn-analyse">
+        <span class="btn-text">&#128269; Analyse Email</span>
+        <span class="btn-spinner" hidden>Analysing...</span>
+      </button>
+    </section>
+
+    <!-- ── RESULT PANEL ── -->
+    <section class="panel result-panel" id="resultPanel" hidden>
+
+      <div class="result-block" id="emailResultBlock">
+        <div class="result-block-header">&#9993; Email Body Analysis</div>
+        <div class="result-icon" id="resultIcon"></div>
+        <h2 class="result-label" id="resultLabel"></h2>
+        <p class="result-sub" id="resultSub"></p>
+        <div class="confidence-wrap" id="confidenceWrap">
+          <span class="conf-label">Confidence</span>
+          <div class="conf-bar-bg"><div class="conf-bar" id="confBar"></div></div>
+          <span class="conf-value" id="confValue"></span>
+        </div>
+      </div>
+
+      <div class="result-block" id="linkResultBlock" hidden>
+        <div class="result-block-header">&#128279; Link Analysis</div>
+        <div id="linkResultsList" class="results-list"></div>
+      </div>
+
+      <div class="result-block" id="fileResultBlock" hidden>
+        <div class="result-block-header">&#128206; Attachment Analysis</div>
+        <div id="fileResultsList" class="results-list"></div>
+      </div>
+
+      <div class="overall-verdict" id="overallVerdict"></div>
+
+      <button class="btn-reset" id="resetBtn">Analyse Another Email</button>
+    </section>
+
+    <!-- ── ERROR PANEL ── -->
+    <section class="panel error-panel" id="errorPanel" hidden>
+      <p id="errorMsg"></p>
+    </section>
+
+    <!-- ── HOW IT WORKS ── -->
+    <section class="panel how-panel">
+      <h2>How It Works</h2>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">01</span>
+          <h3>Email Analysis</h3>
+          <p>Email text is cleaned, tokenised, and classified using TF-IDF + ML models (NB / LR / RF).</p>
+        </div>
+        <div class="step">
+          <span class="step-num">02</span>
+          <h3>Link Scanning</h3>
+          <p>URLs are checked for suspicious TLDs, IP-based domains, lookalike domains, and redirect patterns.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">03</span>
+          <h3>Attachment Check</h3>
+          <p>File type, extension, name patterns, and size are inspected for common malware indicators.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">04</span>
+          <h3>Combined Verdict</h3>
+          <p>All signals are merged into one threat score and a single overall verdict is returned.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>B.Tech Computer Science &mdash; Semester Group Project &mdash; AI Phishing Email Detection System</p>
+  </footer>
+
+  <script>
+    /* ── Char counter ── */
+    const textarea  = document.getElementById('emailInput');
+    const charCount = document.getElementById('charCount');
+    textarea.addEventListener('input', () => { charCount.textContent = textarea.value.length; });
+
+    /* ── Sample buttons ── */
+    document.querySelectorAll('.btn-sample').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const res  = await fetch('/sample/' + btn.dataset.type);
+        const data = await res.json();
+        if (data.email) { textarea.value = data.email; charCount.textContent = data.email.length; }
+      });
+    });
+
+    /* ── Link management ── */
+    const linksArea = document.getElementById('linksArea');
+    document.getElementById('addLinkBtn').addEventListener('click', () => addLinkRow(''));
+
+    function addLinkRow(val) {
+      const row = document.createElement('div');
+      row.className = 'link-input-row';
+      row.innerHTML = '<input type="url" class="link-input" placeholder="https://example.com/suspicious-link" value="' + escHtml(val) + '" />'
+                    + '<button class="btn-remove-link" title="Remove">&#10005;</button>';
+      row.querySelector('.btn-remove-link').addEventListener('click', () => row.remove());
+      linksArea.appendChild(row);
+    }
+
+    // First-row remove just clears the input
+    linksArea.querySelector('.btn-remove-link').addEventListener('click', function () {
+      this.closest('.link-input-row').querySelector('.link-input').value = '';
+    });
+
+    function getLinks() {
+      return [...document.querySelectorAll('.link-input')].map(i => i.value.trim()).filter(Boolean);
+    }
+
+    /* ── File / drop-zone management ── */
+    const dropZone  = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const filesList = document.getElementById('filesList');
+    let attachedFiles = [];
+
+    dropZone.addEventListener('click',     () => fileInput.click());
+    dropZone.addEventListener('dragover',  e  => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', ()  => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop',      e  => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
+    fileInput.addEventListener('change',   ()  => { handleFiles(fileInput.files); fileInput.value = ''; });
+
+    function handleFiles(list) {
+      const MAX = 10 * 1024 * 1024;
+      [...list].forEach(f => {
+        if (attachedFiles.find(x => x.name === f.name && x.size === f.size)) return;
+        if (f.size > MAX) { alert(f.name + ' exceeds 10 MB.'); return; }
+        attachedFiles.push(f);
+        renderFileItem(f);
+      });
+    }
+
+    function renderFileItem(file) {
+      const li = document.createElement('li');
+      li.className = 'file-item';
+      li.innerHTML = '<span class="file-icon">' + getFileIcon(file.name) + '</span>'
+                   + '<span class="file-name">' + escHtml(file.name) + '</span>'
+                   + '<span class="file-size">' + fmtSize(file.size) + '</span>'
+                   + '<button class="file-remove" title="Remove">&#10005;</button>';
+      li.querySelector('.file-remove').addEventListener('click', () => {
+        attachedFiles = attachedFiles.filter(f => !(f.name === file.name && f.size === file.size));
+        li.remove();
+      });
+      filesList.appendChild(li);
+    }
+
+    const FILE_ICONS = { pdf:'📄', doc:'📝', docx:'📝', xls:'📊', xlsx:'📊',
+                         zip:'🗜️', exe:'⚙️', js:'📜', html:'🌐', txt:'📃',
+                         csv:'📊', ppt:'📋', pptx:'📋' };
+    function getFileIcon(name) { return FILE_ICONS[name.split('.').pop().toLowerCase()] || '📁'; }
+    function fmtSize(b) {
+      if (b < 1024) return b + ' B';
+      if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+      return (b/1048576).toFixed(1) + ' MB';
+    }
+
+    /* ── Analyse ── */
+    const analyseBtn  = document.getElementById('analyseBtn');
+    const btnText     = analyseBtn.querySelector('.btn-text');
+    const btnSpinner  = analyseBtn.querySelector('.btn-spinner');
+    const resultPanel = document.getElementById('resultPanel');
+    const errorPanel  = document.getElementById('errorPanel');
+
+    analyseBtn.addEventListener('click', async () => {
+      const email = textarea.value.trim();
+      if (!email) { alert('Please paste email content first.'); return; }
+
+      btnText.hidden = true; btnSpinner.hidden = false;
+      analyseBtn.disabled = true;
+      resultPanel.hidden = errorPanel.hidden = true;
+
+      try {
+        /* 1. Email text */
+        const eRes  = await fetch('/predict', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email}) });
+        const eData = await eRes.json();
+        if (eData.error) throw new Error(eData.error);
+
+        /* 2. Links */
+        const links = getLinks();
+        let linkResults = [];
+        if (links.length) {
+          const lRes  = await fetch('/predict_links', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({links}) });
+          const lData = await lRes.json();
+          linkResults = lData.results || [];
+        }
+
+        /* 3. Files */
+        let fileResults = [];
+        if (attachedFiles.length) {
+          const fd = new FormData();
+          attachedFiles.forEach(f => fd.append('files', f));
+          const fRes  = await fetch('/predict_files', { method:'POST', body: fd });
+          const fData = await fRes.json();
+          fileResults = fData.results || [];
+        }
+
+        showResult(eData, linkResults, fileResults);
+
+      } catch(err) {
+        document.getElementById('errorMsg').textContent = 'Error: ' + err.message;
+        errorPanel.hidden = false;
+      } finally {
+        btnText.hidden = false; btnSpinner.hidden = true;
+        analyseBtn.disabled = false;
+      }
+    });
+
+    function showResult(emailData, linkResults, fileResults) {
+      const isPhish = emailData.label_code === 1;
+
+      /* Email block */
+      document.getElementById('resultIcon').textContent  = isPhish ? '🚨' : '✅';
+      document.getElementById('resultLabel').textContent = emailData.label;
+      document.getElementById('resultLabel').className   = 'result-label ' + (isPhish ? 'phishing' : 'legitimate');
+      document.getElementById('resultSub').textContent   = isPhish
+        ? 'This email shows characteristics commonly associated with phishing. Do NOT click links or share personal info.'
+        : 'This email appears legitimate. Stay cautious with unexpected requests.';
+
+      const cw = document.getElementById('confidenceWrap');
+      if (emailData.confidence !== null) {
+        document.getElementById('confBar').style.cssText = 'width:' + emailData.confidence + '%;background:' + (isPhish ? '#ef4444' : '#22c55e');
+        document.getElementById('confValue').textContent  = emailData.confidence + '%';
+        cw.hidden = false;
+      } else { cw.hidden = true; }
+
+      /* Link block */
+      const linkBlock = document.getElementById('linkResultBlock');
+      if (linkResults.length) {
+        const ll = document.getElementById('linkResultsList');
+        ll.innerHTML = '';
+        linkResults.forEach(r => {
+          const d = document.createElement('div');
+          d.className = 'result-row ' + (r.suspicious ? 'row-danger' : 'row-safe');
+          d.innerHTML = '<span class="rr-icon">' + (r.suspicious ? '🚩' : '✅') + '</span>'
+                      + '<div class="rr-details"><span class="rr-title">' + escHtml(r.url) + '</span>'
+                      + '<span class="rr-reason">' + escHtml(r.reason) + '</span></div>'
+                      + '<span class="rr-badge ' + (r.suspicious ? 'badge-danger' : 'badge-safe') + '">' + (r.suspicious ? 'Suspicious' : 'Clean') + '</span>';
+          ll.appendChild(d);
+        });
+        linkBlock.hidden = false;
+      } else { linkBlock.hidden = true; }
+
+      /* File block */
+      const fileBlock = document.getElementById('fileResultBlock');
+      if (fileResults.length) {
+        const fl = document.getElementById('fileResultsList');
+        fl.innerHTML = '';
+        fileResults.forEach(r => {
+          const d = document.createElement('div');
+          d.className = 'result-row ' + (r.suspicious ? 'row-danger' : 'row-safe');
+          d.innerHTML = '<span class="rr-icon">' + (r.suspicious ? '⚠️' : '✅') + '</span>'
+                      + '<div class="rr-details"><span class="rr-title">' + escHtml(r.filename) + '</span>'
+                      + '<span class="rr-reason">' + escHtml(r.reason) + '</span></div>'
+                      + '<span class="rr-badge ' + (r.suspicious ? 'badge-danger' : 'badge-safe') + '">' + (r.suspicious ? 'Suspicious' : 'Clean') + '</span>';
+          fl.appendChild(d);
+        });
+        fileBlock.hidden = false;
+      } else { fileBlock.hidden = true; }
+
+      /* Overall verdict */
+      const anyBad   = isPhish || linkResults.some(r => r.suspicious) || fileResults.some(r => r.suspicious);
+      const verdict  = document.getElementById('overallVerdict');
+      verdict.className = 'overall-verdict ' + (anyBad ? 'verdict-phishing' : 'verdict-safe');
+      verdict.innerHTML = anyBad
+        ? '<span class="verdict-icon">🛑</span><div><strong>OVERALL: HIGH RISK</strong><p>One or more signals indicate a phishing attempt. Do not interact with this email.</p></div>'
+        : '<span class="verdict-icon">🛡️</span><div><strong>OVERALL: LOW RISK</strong><p>No strong phishing signals detected. Always remain cautious.</p></div>';
+
+      resultPanel.hidden    = false;
+      resultPanel.className = 'panel result-panel ' + (anyBad ? 'phishing' : 'legitimate');
+      resultPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    /* ── Reset ── */
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      textarea.value = ''; charCount.textContent = '0';
+      resultPanel.hidden = errorPanel.hidden = true;
+      attachedFiles = []; filesList.innerHTML = '';
+      linksArea.innerHTML = '<div class="link-input-row">'
+        + '<input type="url" class="link-input" placeholder="https://example.com/suspicious-link" />'
+        + '<button class="btn-remove-link" title="Remove">&#10005;</button></div>';
+      linksArea.querySelector('.btn-remove-link').addEventListener('click', function () {
+        this.closest('.link-input-row').querySelector('.link-input').value = '';
+      });
+      textarea.focus();
+    });
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+  </script>
+</body>
+</html>
