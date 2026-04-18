@@ -295,5 +295,4 @@ with a confidence percentage — no technical knowledge required."
 - **matplotlib, seaborn** — visualisation
 
 ---
-
-*SGP Project — B.Tech Computer Science*
+contributed by khushi
